@@ -295,6 +295,50 @@ open class AloeScrollView: UIScrollView {
   open func isRowHidden(_ row: UIView) -> Bool {
     return (row.superview as? AloeScrollViewCell)?.isHidden ?? false
   }
+
+  // MARK: Adding and Removing Cells
+
+  open var cells: [AloeScrollViewCell] {
+    return stackView.arrangedSubviews as! [AloeScrollViewCell]
+  }
+
+  open func addCell(_ cell: AloeScrollViewCell, animated: Bool) {
+    insertCell(cell, at: cells.count, animated: animated)
+  }
+
+  open func insertCell(_ cell: AloeScrollViewCell, at index: Int, animated: Bool) {
+    setValueIfNotEqual(cellLayoutMargins, for: \.layoutMargins, on: cell)
+    setValueIfNotEqual(cellPreservesSuperviewLayoutMargins, for: \.preservesSuperviewLayoutMargins, on: cell)
+    setValueIfNotEqual(cellBackgroundColor, for: \.unhighlightColor, on: cell)
+    setValueIfNotEqual(cellHighlightColor, for: \.highlightColor, on: cell)
+    configureCell(cell)
+    stackView.insertArrangedSubview(cell, at: index)
+
+    if animated {
+      cell.alpha = 0
+      layoutIfNeeded()
+      UIView.animate(withDuration: 0.3) {
+        cell.alpha = 1
+      }
+    }
+  }
+
+  open func removeCell(_ cell: AloeScrollViewCell, animated: Bool) {
+    let completion: (Bool) -> Void = { _ in
+      cell.removeFromSuperview()
+    }
+
+    if animated {
+      UIView.animate(
+        withDuration: 0.3,
+        animations: {
+          cell.isHidden = true
+        },
+        completion: completion)
+    } else {
+      completion(true)
+    }
+  }
   
   // MARK: Handling User Interaction
   
@@ -388,23 +432,6 @@ open class AloeScrollView: UIScrollView {
       UIView.animate(withDuration: 0.3) {
         cell.alpha = 1
       }
-    }
-  }
-  
-  private func removeCell(_ cell: AloeScrollViewCell, animated: Bool) {
-    let completion: (Bool) -> Void = { _ in
-      cell.removeFromSuperview()
-    }
-    
-    if animated {
-      UIView.animate(
-        withDuration: 0.3,
-        animations: {
-          cell.isHidden = true
-        },
-        completion: completion)
-    } else {
-      completion(true)
     }
   }
 }
