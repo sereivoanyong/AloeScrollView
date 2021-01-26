@@ -67,7 +67,11 @@ open class AloeScrollView: UIScrollView {
   ///
   /// The default inset is 15pt on each side and 12pt on the top and bottom.
   open var cellLayoutMargins: UIEdgeInsets = UIEdgeInsets(top: 12, left: 15, bottom: 12, right: 15)
-  
+
+  open var hideAnimationDuration: TimeInterval = 0.3
+  open var insertAnimationDuration: TimeInterval = 0.3
+  open var removeAnimationDuration: TimeInterval = 0.3
+
   // MARK: Lifecycle
   
   public override init(frame: CGRect = .zero) {
@@ -272,7 +276,7 @@ open class AloeScrollView: UIScrollView {
     guard let cell = row.superview as? AloeScrollViewCell, cell.isHidden != isHidden else { return }
     
     if animated {
-      UIView.animate(withDuration: 0.3) {
+      UIView.animate(withDuration: hideAnimationDuration) {
         cell.isHidden = isHidden
         cell.layoutIfNeeded()
       }
@@ -317,7 +321,7 @@ open class AloeScrollView: UIScrollView {
     if animated {
       cell.alpha = 0
       layoutIfNeeded()
-      UIView.animate(withDuration: 0.3) {
+      UIView.animate(withDuration: insertAnimationDuration) {
         cell.alpha = 1
       }
     }
@@ -329,12 +333,9 @@ open class AloeScrollView: UIScrollView {
     }
 
     if animated {
-      UIView.animate(
-        withDuration: 0.3,
-        animations: {
-          cell.isHidden = true
-        },
-        completion: completion)
+      UIView.animate(withDuration: removeAnimationDuration, animations: {
+        cell.isHidden = true
+      }, completion: completion)
     } else {
       completion(true)
     }
@@ -429,7 +430,7 @@ open class AloeScrollView: UIScrollView {
     if animated {
       cell.alpha = 0
       layoutIfNeeded()
-      UIView.animate(withDuration: 0.3) {
+      UIView.animate(withDuration: insertAnimationDuration) {
         cell.alpha = 1
       }
     }
